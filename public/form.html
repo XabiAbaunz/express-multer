@@ -5,9 +5,33 @@
     <title>Title</title>
 </head>
 <body>
-<form action="/profile" method="post" enctype="multipart/form-data">
+<form action="/profile" method="post" enctype="multipart/form-data" id="uploadForm">
+    <label for="izena">Izena:</label>
+    <input type="text" id="izena" name="izena" required/>
+    <br>
     <input type="file" name="avatar"/>
     <input type="submit">
 </form>
+<script>
+    const form = document.getElementById('uploadForm');
+
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const formData = new FormData(form);
+
+        fetch('/profile', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.text())
+        .then(data => {
+            console.log(data);
+        })
+        .catch(error => {
+            console.error('Errorea:', error);
+        });
+    });
+</script>
 </body>
 </html>
