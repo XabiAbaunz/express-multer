@@ -8,7 +8,7 @@ const storage = multer.diskStorage({
      },
      filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        const hasierakoZatia = file.originalname.split(".")[0];
+        const hasierakoZatia = file.originalname.split(".")[0].replaceAll(" ", "_");
         const luzapena = file.originalname.split(".")[1];
         const fitxategiIzena = `${hasierakoZatia}-${uniqueSuffix}.${luzapena}`;
         cb(null, fitxategiIzena)
@@ -36,10 +36,14 @@ router.get('/', function(req, res, next) {
 
 router.post('/', upload.single('avatar'), function (req, res, next) {
     const izena = req.body.izena;
-    const url = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
 
-    res.send(`Zure izena: ${izena}. Fitxategia: ${url}`);
-    res.status(201);
+    const codespaceURL = process.env.CODESPACE_NAME 
+        ? `https://${process.env.CODESPACE_NAME}-3000.preview.app.github.dev`
+        : `${req.protocol}://${req.get('host')}`;
+
+    const url = `${codespaceURL}/uploads/${req.file.filename}`;
+
+    res.status(201).send(`Zure izena: ${izena}. Fitxategia: ${url}`);
 })
 
 module.exports = router;
