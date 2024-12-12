@@ -1,6 +1,14 @@
 var express = require('express');
 var router = express.Router();
 
+const fs = require('fs');
+const path = require('path');
+
+const uploadPath = path.join(__dirname, '../public/uploads');
+if (!fs.existsSync(uploadPath)) {
+    fs.mkdirSync(uploadPath, { recursive: true });
+}
+
 const multer  = require('multer')
 const storage = multer.diskStorage({
      destination: (req, file, cb) => {
@@ -21,7 +29,7 @@ const upload = multer({
         fileSize: 2 * 1024 * 1024 // 2 MB
     },
     fileFilter: (req, file, cb) => {
-        if ((file.mimetype != 'image/png') && (file.mimetype != 'image/jpeg')) {
+        if (!file.mimetype.startsWith('image/')) {
             cb(new Error('PNG fitxategiak bakarrik onartzen dira'));
         } else {
             cb(null, true); 
